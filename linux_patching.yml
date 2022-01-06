@@ -1,0 +1,19 @@
+---
+- become: true
+  gather_facts: true
+  hosts: all
+  name: "patch linux servers"
+  tasks:
+    - name: "check yum for updates"
+      register: yumcheck
+      yum:
+        list: updates
+        update_cache: true
+    - block:
+      - name: "update all packages"
+        yum:
+          name: "*"
+          state: latest
+      - name: reboot
+        reboot:
+      when: yumcheck.results
